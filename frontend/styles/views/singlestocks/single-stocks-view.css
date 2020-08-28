@@ -1,0 +1,6 @@
+#single-stocks-view {
+  display: block;
+}
+:host {
+  display: block;
+}
