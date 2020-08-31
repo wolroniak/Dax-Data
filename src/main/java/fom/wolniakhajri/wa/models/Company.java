@@ -1,8 +1,8 @@
 package fom.wolniakhajri.wa.models;
 
 public class Company {
-    private String name;
-    private String symbol;
+    private final String name;
+    private final String symbol;
 
     public Company(String name, String symbol) {
         this.name = name;

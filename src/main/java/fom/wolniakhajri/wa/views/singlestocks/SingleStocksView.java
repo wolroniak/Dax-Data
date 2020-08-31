@@ -15,7 +15,7 @@ import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import fom.wolniakhajri.wa.controllers.DataSeriesController;
-import fom.wolniakhajri.wa.controllers.StockDataController;
+import fom.wolniakhajri.wa.models.CompanyList;
 import fom.wolniakhajri.wa.models.Company;
 import fom.wolniakhajri.wa.views.main.MainView;
 
@@ -48,7 +48,7 @@ public class SingleStocksView extends Div {
 
         //Initialize ComboBox
         this.comboBoxCompanies = new ComboBox<>();
-        List<Company> companyList = StockDataController.createCompanyList();
+        List<Company> companyList = CompanyList.createCompanyList();
         comboBoxCompanies.setItemLabelGenerator(Company::getName);
         comboBoxCompanies.setItems(companyList);
         comboBoxCompanies.setValue(companyList.get(12));
@@ -256,7 +256,7 @@ public class SingleStocksView extends Div {
                         .withText(company.getName() + " (" + company.getSymbol() + ")")
                         .withAlign(Align.left)
                         .build())
-                .withSeries(DataSeriesController.getStockData(company.getSymbol(), range, interval))
+                .withSeries(DataSeriesController.getStockDataset(company.getSymbol(), range, interval))
                 .withXaxis(XAxisBuilder.get()
                         .withType(XAxisType.categories)
                         .withTooltip(TooltipBuilder.get()

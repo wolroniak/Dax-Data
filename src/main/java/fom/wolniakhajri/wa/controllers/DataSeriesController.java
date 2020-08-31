@@ -12,6 +12,7 @@ import java.math.RoundingMode;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -38,7 +39,28 @@ public class DataSeriesController {
         }
     }
 
-    public static Series<Coordinate> getStockData(String symbol, String range, String interval) throws IOException {
+    public static Series<Coordinate> getStockDataset(String symbol, String range, String interval) throws IOException {
+
+        ArrayList<double[]> stockData = getStockData(symbol, range, interval);
+        Series<Coordinate> dataset = new Series<>();
+        Coordinate[] data = new Coordinate[stockData.get(0).length];
+
+        double[] timestamp = stockData.get(0);
+        double[] open = stockData.get(1);
+        double[] high = stockData.get(2);
+        double[] low = stockData.get(3);
+        double[] close = stockData.get(4);
+
+        for (int i = 0; i < timestamp.length; i++) {
+            data[i] = new Coordinate(getDateString((long) timestamp[i], interval, range), open[i], high[i], low[i], close[i]);
+        }
+
+        dataset.setData(data);
+        return dataset;
+
+    }
+
+    public static ArrayList<double[]> getStockData(String symbol, String range, String interval) throws IOException {
 
         JSONObject json = readJsonFromUrl("https://query1.finance.yahoo.com/v7/finance/chart/" + symbol + "?range=" + range + "&interval=" + interval + "&indicators=quote&includeTimestamps=true");
 
@@ -49,7 +71,6 @@ public class DataSeriesController {
 
         //Array: Timestamp
         JSONArray arrayTimestamp = output0.getJSONArray("timestamp");
-        int[] timestamps = new int[arrayTimestamp.length()];
 
         //Weiter bei Indicators
         JSONObject outputIndicators = output0.getJSONObject("indicators");
@@ -72,12 +93,16 @@ public class DataSeriesController {
         JSONArray arrayOpen = output0_2.getJSONArray("open");
         double[] opens = new double[arrayOpen.length()];
 
-        Series<Coordinate> dataset = new Series<>();
-        Coordinate[] data = new Coordinate[arrayTimestamp.length()];
+        ArrayList<double[]> data = new ArrayList<>();
+        double[] timestampOutput = new double[opens.length];
+        double[] openOutput = new double[opens.length];
+        double[] highOutput = new double[highs.length];
+        double[] lowOutput = new double[lows.length];
+        double[] closeOutput = new double[closes.length];
 
         //Befüllen der AusgabeArrays und Ausgabe
-        for (int i = 0; i < timestamps.length; i++) {
-            timestamps[i] = arrayTimestamp.getInt(i);
+        for (int i = 0; i < timestampOutput.length; i++) {
+            timestampOutput[i] = arrayTimestamp.getInt(i);
             /*if (arrayVolume.get(i) instanceof Integer) {
                 volumes[i] = arrayVolume.getInt(i);
             } else {
@@ -104,24 +129,30 @@ public class DataSeriesController {
                 opens[i] = opens[i - 1];
             }
 
+            //Coordinate[] data = new Coordinate[arrayTimestamp.length()];
+
             BigDecimal bd = BigDecimal.valueOf(opens[i]).setScale(4, RoundingMode.HALF_UP);
-            double open = bd.doubleValue();
+            openOutput[i] = bd.doubleValue();
             bd = BigDecimal.valueOf(highs[i]).setScale(4, RoundingMode.HALF_UP);
-            double high = bd.doubleValue();
+            highOutput[i] = bd.doubleValue();
             bd = BigDecimal.valueOf(lows[i]).setScale(4, RoundingMode.HALF_UP);
-            double low = bd.doubleValue();
+            lowOutput[i] = bd.doubleValue();
             bd = BigDecimal.valueOf(closes[i]).setScale(4, RoundingMode.HALF_UP);
-            double close = bd.doubleValue();
-            //noinspection unchecked
-            data[i] = new Coordinate(getDateString(timestamps[i], interval, range), open, high, low, close);
+            closeOutput[i] = bd.doubleValue();
 
         }
 
-        dataset.setData(data);
-        return dataset;
+        data.add(timestampOutput);
+        data.add(openOutput);
+        data.add(highOutput);
+        data.add(lowOutput);
+        data.add(closeOutput);
+
+        return data;
+
     }
 
-    private static String getDateString(long unix_seconds, String interval, String range) {
+    public static String getDateString(long unix_seconds, String interval, String range) {
         Date date = new Date(unix_seconds*1000L);
 
         SimpleDateFormat jdf;

@@ -9,24 +9,22 @@ import com.github.appreciated.apexcharts.config.legend.HorizontalAlign;
 import com.github.appreciated.apexcharts.config.stroke.Curve;
 import com.github.appreciated.apexcharts.config.subtitle.Align;
 import com.github.appreciated.apexcharts.config.xaxis.XAxisType;
+import com.github.appreciated.apexcharts.helper.Coordinate;
 import com.github.appreciated.apexcharts.helper.Series;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import fom.wolniakhajri.wa.controllers.DataSeriesController;
-import fom.wolniakhajri.wa.controllers.StockDataController;
 import fom.wolniakhajri.wa.models.Company;
+import fom.wolniakhajri.wa.models.CompanyList;
 import fom.wolniakhajri.wa.views.main.MainView;
 
 import java.io.IOException;
-import java.time.LocalDate;
+import java.text.DecimalFormat;
 import java.util.List;
-import java.util.stream.IntStream;
 
 @Route(value = "analyze", layout = MainView.class)
 @PageTitle("Data Science")
@@ -52,7 +50,7 @@ public class DataScienceView extends Div {
         setId("data-science-view");
         //Initialize ComboBox
         this.comboBoxCompanies = new ComboBox<>();
-        List<Company> companyList = StockDataController.createCompanyList();
+        List<Company> companyList = CompanyList.createCompanyList();
         comboBoxCompanies.setItemLabelGenerator(Company::getName);
         comboBoxCompanies.setItems(companyList);
         comboBoxCompanies.setValue(companyList.get(12));
@@ -232,12 +230,40 @@ public class DataScienceView extends Div {
         clickedButton = toDisable;
     }
 
+    private String[] getChangeRateArray(double[] array) {
+        String[] output = new String[array.length];
+        for (int i = 0; i < array.length; i++) {
+            double changeRate = ((array[0] - array[i])/array[0])*100*-1;
+            DecimalFormat df = new DecimalFormat("###.##");
+            output[i] = df.format(changeRate);
+        }
+        return output;
+    }
+
     private void buildChart(Company company, String range, String interval) throws IOException {
         if (chartInitialized) {
             remove(barChart);
         } else {
             chartInitialized = true;
         }
+
+        double[] data = DataSeriesController.getStockData(company.getSymbol(), range, interval).get(2);
+        double[] time = DataSeriesController.getStockData(company.getSymbol(), range, interval).get(0);
+
+        double changeRate = ((data[0] - data[data.length-1])/data[0])*100*-1;
+        DecimalFormat df = new DecimalFormat("###.##");
+        String changeIndex = df.format(changeRate);
+
+        Object[] test = new Object[data.length];
+
+        Coordinate[] coordinates = new Coordinate[data.length];
+        for (int i = 0; i < coordinates.length; i++) {
+            coordinates[i] = new Coordinate(DataSeriesController.getDateString((long) time[i], interval, range), data[i]);
+        }
+
+        Series<Coordinate> neu = new Series<>();
+        neu.setName("Value");
+        neu.setData(coordinates);
 
         barChart = ApexChartsBuilder.get()
                         .withChart(ChartBuilder.get()
@@ -250,11 +276,10 @@ public class DataScienceView extends Div {
                                 .withEnabled(false)
                                 .build())
                         .withStroke(StrokeBuilder.get().withCurve(Curve.straight).build())
-                        .withSeries(DataSeriesController.getStockData(company.getSymbol(), range, interval))
+                        .withSeries(neu)
                         .withTitle(TitleSubtitleBuilder.get()
-                                .withText(company.getName() + " (" + company.getSymbol() + ")")
+                                .withText(company.getName() + " (" + company.getSymbol() + ")  ||  " + changeIndex + "%")      //Upgrade hier!
                                 .withAlign(Align.left).build())
-                        .withLabels(IntStream.range(1, 10).boxed().map(day -> LocalDate.of(2000, 1, day).toString()).toArray(String[]::new))
                         .withXaxis(XAxisBuilder.get()
                                 .withType(XAxisType.categories).withTooltip(TooltipBuilder.get()
                                         .withEnabled(true)

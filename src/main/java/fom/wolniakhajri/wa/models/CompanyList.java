@@ -1,12 +1,10 @@
-package fom.wolniakhajri.wa.controllers;
-
-import fom.wolniakhajri.wa.models.Company;
+package fom.wolniakhajri.wa.models;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 
-public class StockDataController {
+public class CompanyList {
 
     public static ArrayList<Company> createCompanyList() {
         Company[] comps = new Company[30];
