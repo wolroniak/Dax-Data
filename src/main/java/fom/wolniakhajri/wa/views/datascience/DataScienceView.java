@@ -46,6 +46,8 @@ public class DataScienceView extends Div {
     private final Button button1day;
     private boolean chartInitialized = false;
 
+    private double[] data = null;
+
     public DataScienceView() {
         setId("data-science-view");
         //Initialize ComboBox
@@ -56,122 +58,77 @@ public class DataScienceView extends Div {
         comboBoxCompanies.setValue(companyList.get(12));
         comboBoxCompanies.addValueChangeListener(event -> {
             //Änderung des Unternehmens
-            try {
-                this.buildChart(comboBoxCompanies.getValue(), clickedButton.getText(), getInterval(clickedButton.getText()));
-                System.out.println("TEST= " + clickedButton.getText());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            this.buildChart(comboBoxCompanies.getValue(), clickedButton.getText(), getInterval(clickedButton.getText()));
         });
 
         //Initialize Button: MAX
         buttonMax = new Button("max");
         buttonMax.addClickListener(clickEvent -> {
-            try {
-                this.buildChart(comboBoxCompanies.getValue(), "max", "3mo");
-                disableButton(buttonMax);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            this.buildChart(comboBoxCompanies.getValue(), "max", "3mo");
+            disableButton(buttonMax);
         });
 
         //Initialize Button: 10 Years
         button10years = new Button("10y");
         button10years.addClickListener(clickEvent -> {
-            try {
-                this.buildChart(comboBoxCompanies.getValue(), "10y", "1mo");
-                disableButton(button10years);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            this.buildChart(comboBoxCompanies.getValue(), "10y", "1mo");
+            disableButton(button10years);
         });
 
         //Initialize Button: 5 Years
         button5years = new Button("5y");
         button5years.addClickListener(clickEvent -> {
-            try {
-                this.buildChart(comboBoxCompanies.getValue(), "5y", "1wk");
-                disableButton(button5years);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            this.buildChart(comboBoxCompanies.getValue(), "5y", "1wk");
+            disableButton(button5years);
         });
 
         //Initialize Button: 2 Years
         button2years = new Button("2y");
         button2years.addClickListener(clickEvent -> {
-            try {
-                this.buildChart(comboBoxCompanies.getValue(), "2y", "5d");
-                disableButton(button2years);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            this.buildChart(comboBoxCompanies.getValue(), "2y", "5d");
+            disableButton(button2years);
         });
 
         //Initialize Button: 1 Year
         button1year = new Button("1y");
         button1year.addClickListener(clickEvent -> {
-            try {
-                this.buildChart(comboBoxCompanies.getValue(), "1y", "1d");
-                disableButton(button1year);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            this.buildChart(comboBoxCompanies.getValue(), "1y", "1d");
+            disableButton(button1year);
         });
 
         //Initialize Button: 6 Months
         button6months = new Button("6mo");
         button6months.addClickListener(clickEvent -> {
-            try {
-                this.buildChart(comboBoxCompanies.getValue(), "6mo", "1d");
-                disableButton(button6months);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            this.buildChart(comboBoxCompanies.getValue(), "6mo", "1d");
+            disableButton(button6months);
         });
 
         //Initialize Button: 3 Months
         button3months = new Button("3mo");
         button3months.addClickListener(clickEvent -> {
-            try {
-                this.buildChart(comboBoxCompanies.getValue(), "3mo", "1h");
-                disableButton(button3months);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            this.buildChart(comboBoxCompanies.getValue(), "3mo", "1h");
+            disableButton(button3months);
         });
 
         //Initialize Button: 1 Months
         button1month = new Button("1mo");
         button1month.addClickListener(clickEvent -> {
-            try {
-                this.buildChart(comboBoxCompanies.getValue(), "1mo", "15m");
-                disableButton(button1month);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            this.buildChart(comboBoxCompanies.getValue(), "1mo", "15m");
+            disableButton(button1month);
         });
 
         //Initialize Button: 1 Week (7d)
         button1week = new Button("7d");
         button1week.addClickListener(clickEvent -> {
-            try {
-                this.buildChart(comboBoxCompanies.getValue(), "7d", "5m");
-                disableButton(button1week);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            this.buildChart(comboBoxCompanies.getValue(), "7d", "5m");
+            disableButton(button1week);
         });
 
         //Initialize Button: 1 Day (Intraday)
         button1day = new Button("1d");
         button1day.addClickListener(clickEvent -> {
-            try {
-                this.buildChart(comboBoxCompanies.getValue(), "1d", "1m");
-                disableButton(button1day);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            this.buildChart(comboBoxCompanies.getValue(), "1d", "1m");
+            disableButton(button1day);
         });
 
         //ComboBox
@@ -189,12 +146,8 @@ public class DataScienceView extends Div {
         add(button1week);
         add(button1day);
 
-        try {
-            buildChart(companyList.get(12), "7d", "5m");
-            disableButton(button1week);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        buildChart(companyList.get(12), "7d", "5m");
+        disableButton(button1week);
     }
 
     private String getInterval(String text) {
@@ -230,31 +183,9 @@ public class DataScienceView extends Div {
         clickedButton = toDisable;
     }
 
-    private String[] getChangeRateArray(double[] array) {
-        String[] output = new String[array.length];
-        for (int i = 0; i < array.length; i++) {
-            double changeRate = ((array[0] - array[i])/array[0])*100*-1;
-            DecimalFormat df = new DecimalFormat("###.##");
-            output[i] = df.format(changeRate);
-        }
-        return output;
-    }
-
-    private void buildChart(Company company, String range, String interval) throws IOException {
-        if (chartInitialized) {
-            remove(barChart);
-        } else {
-            chartInitialized = true;
-        }
-
-        double[] data = DataSeriesController.getStockData(company.getSymbol(), range, interval).get(2);
+    private Series<Coordinate> createCoordinateSeries(String name, Company company, String range, String interval) throws IOException {
+        data = DataSeriesController.getStockData(company.getSymbol(), range, interval).get(2);
         double[] time = DataSeriesController.getStockData(company.getSymbol(), range, interval).get(0);
-
-        double changeRate = ((data[0] - data[data.length-1])/data[0])*100*-1;
-        DecimalFormat df = new DecimalFormat("###.##");
-        String changeIndex = df.format(changeRate);
-
-        Object[] test = new Object[data.length];
 
         Coordinate[] coordinates = new Coordinate[data.length];
         for (int i = 0; i < coordinates.length; i++) {
@@ -264,6 +195,29 @@ public class DataScienceView extends Div {
         Series<Coordinate> neu = new Series<>();
         neu.setName("Value");
         neu.setData(coordinates);
+
+        return neu;
+    }
+
+    private void buildChart(Company company, String range, String interval) {
+        if (chartInitialized) {
+            remove(barChart);
+        } else {
+            chartInitialized = true;
+        }
+
+        Series<Coordinate> dataCoordinate = null;
+        String changeIndex;
+
+        try {
+            dataCoordinate = createCoordinateSeries("->", company, range, interval);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            double changeRate = ((data[0] - data[data.length-1])/data[0])*100*-1;
+            DecimalFormat df = new DecimalFormat("###.##");
+            changeIndex = df.format(changeRate);
+        }
 
         barChart = ApexChartsBuilder.get()
                         .withChart(ChartBuilder.get()
@@ -276,9 +230,9 @@ public class DataScienceView extends Div {
                                 .withEnabled(false)
                                 .build())
                         .withStroke(StrokeBuilder.get().withCurve(Curve.straight).build())
-                        .withSeries(neu)
+                        .withSeries(dataCoordinate)
                         .withTitle(TitleSubtitleBuilder.get()
-                                .withText(company.getName() + " (" + company.getSymbol() + ")  ||  " + changeIndex + "%")      //Upgrade hier!
+                                .withText(company.getName() + " (" + company.getSymbol() + ")  " + changeIndex + "%")      //Upgrade hier!
                                 .withAlign(Align.left).build())
                         .withXaxis(XAxisBuilder.get()
                                 .withType(XAxisType.categories).withTooltip(TooltipBuilder.get()
