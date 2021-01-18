@@ -23,10 +23,8 @@ import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 
-import fom.wolniakhajri.wa.views.main.MainView;
 import fom.wolniakhajri.wa.views.dax.DAXView;
 import fom.wolniakhajri.wa.views.singlestocks.SingleStocksView;
-import fom.wolniakhajri.wa.views.datascience.DataScienceView;
 import fom.wolniakhajri.wa.views.about.AboutView;
 
 /**
@@ -90,7 +88,6 @@ public class MainView extends AppLayout {
         RouterLink[] links = new RouterLink[] {
             new RouterLink("DAX", DAXView.class),
             new RouterLink("Single Stocks", SingleStocksView.class),
-            new RouterLink("Data Science", DataScienceView.class),
             new RouterLink("About", AboutView.class)
         };
         return Arrays.stream(links).map(MainView::createTab).toArray(Tab[]::new);
