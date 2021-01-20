@@ -10,6 +10,7 @@ import com.github.appreciated.apexcharts.config.subtitle.Align;
 import com.github.appreciated.apexcharts.config.xaxis.XAxisType;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
@@ -18,10 +19,12 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import fom.wolniakhajri.wa.controllers.DataSeriesController;
+import fom.wolniakhajri.wa.models.ChartTypes;
 import fom.wolniakhajri.wa.models.Company;
 import fom.wolniakhajri.wa.views.main.MainView;
 
 import java.io.IOException;
+import java.util.List;
 
 @Route(value = "dax", layout = MainView.class)
 @RouteAlias(value = "", layout = MainView.class)
@@ -31,6 +34,7 @@ public class DAXView extends Div {
 
     private ApexCharts barChart;
     private ApexCharts daxChart;
+    private final ComboBox<ChartTypes> chartTypesComboBox;
     private Button clickedButton;
     private final Button buttonMax;
     private final Button button10years;
@@ -47,11 +51,24 @@ public class DAXView extends Div {
     public DAXView() {
         setId("d-ax-view");
         this.daxChart = new ApexCharts();
+        //Initialize ComboBox
+        this.chartTypesComboBox = new ComboBox<>();
+        List<ChartTypes> chartTypelist = ChartTypes.createChartTypeList();
+        chartTypesComboBox.setItemLabelGenerator(ChartTypes::getStringValue);
+        chartTypesComboBox.setItems(chartTypelist);
+        chartTypesComboBox.setValue(chartTypelist.get(0));
+        chartTypesComboBox.addValueChangeListener(event->{
+            try {
+                this.buildChart(clickedButton.getText(),getInterval(clickedButton.getText()), chartTypesComboBox.getValue());
+            } catch(IOException e){
+                e.printStackTrace();
+            }
+        });
         //Initialize Button: MAX
         buttonMax = new Button("max");
         buttonMax.addClickListener(clickEvent -> {
             try {
-                this.buildChart( "max", "3mo");
+                this.buildChart( "max", "3mo", chartTypesComboBox.getValue());
                 disableButton(buttonMax);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -62,7 +79,7 @@ public class DAXView extends Div {
         button10years = new Button("10y");
         button10years.addClickListener(clickEvent -> {
             try {
-                this.buildChart("10y", "1mo");
+                this.buildChart("10y", "1mo", chartTypesComboBox.getValue());
                 disableButton(button10years);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -73,7 +90,7 @@ public class DAXView extends Div {
         button5years = new Button("5y");
         button5years.addClickListener(clickEvent -> {
             try {
-                this.buildChart( "5y", "1wk");
+                this.buildChart( "5y", "1wk", chartTypesComboBox.getValue());
                 disableButton(button5years);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -84,7 +101,7 @@ public class DAXView extends Div {
         button2years = new Button("2y");
         button2years.addClickListener(clickEvent -> {
             try {
-                this.buildChart("2y", "5d");
+                this.buildChart("2y", "5d", chartTypesComboBox.getValue());
                 disableButton(button2years);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -95,7 +112,7 @@ public class DAXView extends Div {
         button1year = new Button("1y");
         button1year.addClickListener(clickEvent -> {
             try {
-                this.buildChart("1y", "1d");
+                this.buildChart("1y", "1d", chartTypesComboBox.getValue());
                 disableButton(button1year);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -106,7 +123,7 @@ public class DAXView extends Div {
         button6months = new Button("6mo");
         button6months.addClickListener(clickEvent -> {
             try {
-                this.buildChart("6mo", "1d");
+                this.buildChart("6mo", "1d", chartTypesComboBox.getValue());
                 disableButton(button6months);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -117,7 +134,7 @@ public class DAXView extends Div {
         button3months = new Button("3mo");
         button3months.addClickListener(clickEvent -> {
             try {
-                this.buildChart("3mo", "1h");
+                this.buildChart("3mo", "1h", chartTypesComboBox.getValue());
                 disableButton(button3months);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -128,7 +145,7 @@ public class DAXView extends Div {
         button1month = new Button("1mo");
         button1month.addClickListener(clickEvent -> {
             try {
-                this.buildChart("1mo", "15m");
+                this.buildChart("1mo", "15m", chartTypesComboBox.getValue());
                 disableButton(button1month);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -139,7 +156,7 @@ public class DAXView extends Div {
         button1week = new Button("7d");
         button1week.addClickListener(clickEvent -> {
             try {
-                this.buildChart("7d", "5m");
+                this.buildChart("7d", "5m", chartTypesComboBox.getValue());
                 disableButton(button1week);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -150,7 +167,7 @@ public class DAXView extends Div {
         button1day = new Button("1d");
         button1day.addClickListener(clickEvent -> {
             try {
-                this.buildChart("1d", "1m");
+                this.buildChart("1d", "1m", chartTypesComboBox.getValue());
                 disableButton(button1day);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -170,8 +187,9 @@ public class DAXView extends Div {
         add(button1week);
         add(button1day);
 
+        add(chartTypesComboBox);
         try {
-            buildChart("7d", "5m");
+            buildChart("7d", "5m", chartTypesComboBox.getValue());
             disableButton(button1week);
         } catch (IOException e) {
             e.printStackTrace();
@@ -179,11 +197,7 @@ public class DAXView extends Div {
         add(daxChart);
     }
 
-    private void setTypeOfChart(){
-
-    }
-
-    private void buildChart(String range, String interval) throws IOException {
+    private void buildChart(String range, String interval,ChartTypes type) throws IOException {
         if (chartInitialized) {
             remove(barChart);
         } else {
@@ -192,7 +206,7 @@ public class DAXView extends Div {
 
         barChart = ApexChartsBuilder.get()
                 .withChart(ChartBuilder.get()
-                        .withType(Type.area)
+                        .withType(getChartType(type.name()))
                         .withAnimations(AnimationsBuilder.get().withEnabled(true).withDynamicAnimation(DynamicAnimationBuilder.get().withEnabled(true).withSpeed(350).build()).build())
                         .withHeight("490")
                         .build())
@@ -230,5 +244,46 @@ public class DAXView extends Div {
         toDisable.setEnabled(false);
         clickedButton = toDisable;
     }
+    private String getInterval(String text) {
+        switch (text) {
+            case "max":
+                return "3mo";
+            case "10y":
+                return "1mo";
+            case "5y":
+                return "1wk";
+            case "2y":
+                return "5d";
+            case "1y":
+            case "6mo":
+                return "1d";
+            case "3mo":
+                return "1h";
+            case "1mo":
+                return "15m";
+            case "7d":
+                return "5m";
+            case "1d":
+                return "1m";
+        }
+        return null;
+    }
 
+    private Type getChartType(String type){
+        Type tmp = Type.area;
+        switch (type){
+            case "AREA":
+                tmp = Type.area;
+                break;
+            case "CANDLESTICK":
+                tmp = Type.candlestick;
+                break;
+            case "LINE":
+                tmp = Type.line;
+                break;
+            default:
+                break;
+        }
+        return tmp;
+    }
 }
