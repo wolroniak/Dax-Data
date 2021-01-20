@@ -179,6 +179,10 @@ public class DAXView extends Div {
         add(daxChart);
     }
 
+    private void setTypeOfChart(){
+
+    }
+
     private void buildChart(String range, String interval) throws IOException {
         if (chartInitialized) {
             remove(barChart);
