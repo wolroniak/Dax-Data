@@ -35,6 +35,7 @@ public class SingleStocksView extends Div {
 
     private ApexCharts barChart;
     private final ComboBox<Company> comboBoxCompanies;
+    private final ComboBox<ChartTypes> chartTypesComboBox;
     private Button clickedButton;
     private final Button buttonMax;
     private final Button button10years;
