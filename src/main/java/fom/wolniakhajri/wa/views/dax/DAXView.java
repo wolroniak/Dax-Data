@@ -4,6 +4,8 @@ import com.github.appreciated.apexcharts.ApexCharts;
 import com.github.appreciated.apexcharts.ApexChartsBuilder;
 import com.github.appreciated.apexcharts.config.builder.*;
 import com.github.appreciated.apexcharts.config.chart.Type;
+import com.github.appreciated.apexcharts.config.chart.animations.builder.DynamicAnimationBuilder;
+import com.github.appreciated.apexcharts.config.chart.builder.AnimationsBuilder;
 import com.github.appreciated.apexcharts.config.subtitle.Align;
 import com.github.appreciated.apexcharts.config.xaxis.XAxisType;
 import com.vaadin.flow.component.UI;
@@ -176,6 +178,7 @@ public class DAXView extends Div {
         }
         add(daxChart);
     }
+
     private void buildChart(String range, String interval) throws IOException {
         if (chartInitialized) {
             remove(barChart);
@@ -183,18 +186,10 @@ public class DAXView extends Div {
             chartInitialized = true;
         }
 
-        UI.getCurrent().getPage().executeJs("var output = window.innerWidth+' x '+window.innerHeight;" +
-                "console.log(output);");
-
-        Page page = UI.getCurrent().getPage();
-        page.addBrowserWindowResizeListener(
-                event -> System.out.println("Window width="
-                        + event.getWidth()
-                        + ", height=" + event.getHeight()));
-
         barChart = ApexChartsBuilder.get()
                 .withChart(ChartBuilder.get()
-                        .withType(Type.line)
+                        .withType(Type.area)
+                        .withAnimations(AnimationsBuilder.get().withEnabled(true).withDynamicAnimation(DynamicAnimationBuilder.get().withEnabled(true).withSpeed(350).build()).build())
                         .withHeight("490")
                         .build())
                 .withDataLabels(DataLabelsBuilder.get()
