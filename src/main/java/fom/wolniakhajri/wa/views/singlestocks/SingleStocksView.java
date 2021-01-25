@@ -37,10 +37,13 @@ import java.util.List;
 public class SingleStocksView extends MVCView {
 
     private ApexCharts barChart;
-    public final ComboBox<Company> comboBoxCompanies;
-    private final ComboBox<ChartTypes> chartTypesComboBox;
+    public ComboBox<Company> comboBoxCompanies;
+    private ComboBox<ChartTypes> chartTypesComboBox;
     private boolean chartInitialized = false;
 
+    public SingleStocksView(){
+        super(new MVCController());
+    }
 
     public SingleStocksView(MVCController controller) {
         super(controller);

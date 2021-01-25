@@ -1,5 +1,6 @@
 package fom.wolniakhajri.wa.controllers;
 
+import com.github.appreciated.apexcharts.ApexCharts;
 import com.github.appreciated.apexcharts.ApexChartsBuilder;
 import com.github.appreciated.apexcharts.config.builder.*;
 import com.github.appreciated.apexcharts.config.chart.animations.builder.DynamicAnimationBuilder;
@@ -45,8 +46,9 @@ public class MVCController {
         } else {
             view.chartInitialized = true;
         }
+        ApexCharts toReturn;
         if(view instanceof SingleStocksView) {
-            view.barChart = ApexChartsBuilder.get()
+            toReturn = ApexChartsBuilder.get()
                     .withChart(ChartBuilder.get()
                             .withType(view.getChartType(types.name()))
                             .withZoom(ZoomBuilder.get().withEnabled(true).build())
@@ -76,7 +78,7 @@ public class MVCController {
         }
         else
         {
-            view.barChart = ApexChartsBuilder.get()
+            toReturn = ApexChartsBuilder.get()
                     .withChart(ChartBuilder.get()
                             .withType(view.getChartType(types.name()))
                             .withAnimations(AnimationsBuilder.get().withEnabled(true).withDynamicAnimation(DynamicAnimationBuilder.get().withEnabled(true).withSpeed(350).build()).build())
@@ -104,7 +106,7 @@ public class MVCController {
                     .build();
         }
 
-        view.add(view.barChart);
+        view.add(toReturn);
         view.setWidth("100%");
         view.setHeight("100%");
     }

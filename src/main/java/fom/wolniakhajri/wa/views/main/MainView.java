@@ -23,6 +23,7 @@ import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 
+import fom.wolniakhajri.wa.controllers.MVCController;
 import fom.wolniakhajri.wa.views.dax.DAXView;
 import fom.wolniakhajri.wa.views.singlestocks.SingleStocksView;
 import fom.wolniakhajri.wa.views.about.AboutView;

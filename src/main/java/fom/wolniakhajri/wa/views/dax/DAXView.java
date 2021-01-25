@@ -36,9 +36,13 @@ public class DAXView extends MVCView {
 
     private ApexCharts barChart;
     private ApexCharts daxChart;
-    private final ComboBox<ChartTypes> chartTypesComboBox;
+    private ComboBox<ChartTypes> chartTypesComboBox;
 
     private boolean chartInitialized = false;
+
+    public DAXView(){
+        super(new MVCController());
+    }
 
     public DAXView(MVCController controller) {
         super(controller);

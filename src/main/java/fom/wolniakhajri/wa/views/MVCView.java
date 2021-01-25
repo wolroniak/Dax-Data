@@ -29,7 +29,7 @@ public class MVCView extends Div {
     public MVCView(MVCController ctrl){
         this.controller = ctrl;
     }
-
+    public MVCView(){}
     public Type getChartType(String type){
         Type tmp = Type.area;
         switch (type){
