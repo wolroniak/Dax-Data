@@ -41,7 +41,7 @@ public class DAXView extends MVCView {
     private boolean chartInitialized = false;
 
     public DAXView(){
-        super(new MVCController());
+       new DAXView(MVCController.getInstance());
     }
 
     public DAXView(MVCController controller) {

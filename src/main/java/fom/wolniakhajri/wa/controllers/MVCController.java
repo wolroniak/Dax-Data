@@ -18,10 +18,15 @@ import java.io.IOException;
 
 public class MVCController {
     private MVCView singleStocksView, daxView;
+    private static final MVCController OBJ = new MVCController();
 
-    public MVCController(){
-        this.singleStocksView = new SingleStocksView(this);
-        this.daxView = new DAXView(this);
+    public static MVCController getInstance(){
+        return OBJ;
+    }
+
+    private MVCController(){
+  //      this.singleStocksView = new SingleStocksView(this);
+//        this.daxView = new DAXView(this);
 
     }
 
@@ -48,6 +53,7 @@ public class MVCController {
         }
         ApexCharts toReturn;
         if(view instanceof SingleStocksView) {
+            this.singleStocksView = view;
             toReturn = ApexChartsBuilder.get()
                     .withChart(ChartBuilder.get()
                             .withType(view.getChartType(types.name()))
@@ -78,6 +84,7 @@ public class MVCController {
         }
         else
         {
+            this.daxView = view;
             toReturn = ApexChartsBuilder.get()
                     .withChart(ChartBuilder.get()
                             .withType(view.getChartType(types.name()))

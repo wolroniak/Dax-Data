@@ -42,7 +42,8 @@ public class SingleStocksView extends MVCView {
     private boolean chartInitialized = false;
 
     public SingleStocksView(){
-        super(new MVCController());
+        //super();
+        new SingleStocksView(MVCController.getInstance());
     }
 
     public SingleStocksView(MVCController controller) {
