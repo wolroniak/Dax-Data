@@ -106,7 +106,7 @@ public class Controller {
                             .withEnabled(false)
                             .build())
                     .withTitle(TitleSubtitleBuilder.get()
-                            .withText("DAX (" + symbol + ")")
+                            .withText("DAX (^GDAXI)")
                             .withAlign(Align.left)
                             .build())
                     .withSeries(DataSeriesModel.getStockDataset(symbol, range, interval))

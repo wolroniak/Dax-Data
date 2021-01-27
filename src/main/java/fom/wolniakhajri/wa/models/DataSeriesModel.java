@@ -52,6 +52,7 @@ public class DataSeriesModel {
         }
 
         dataset.setData(data);
+        dataset.setName("EUR");
         return dataset;
 
     }
