@@ -1,15 +1,13 @@
 package fom.wolniakhajri.wa.views.main;
 
-import java.util.Arrays;
-import java.util.Optional;
-
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -17,23 +15,23 @@ import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.RouteConfiguration;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
-
+import fom.wolniakhajri.wa.views.about.AboutView;
 import fom.wolniakhajri.wa.views.dax.DAXView;
 import fom.wolniakhajri.wa.views.singlestocks.SingleStocksView;
-import fom.wolniakhajri.wa.views.about.AboutView;
+
+import java.util.Optional;
 
 /**
  * The main view is a top-level placeholder for other views.
  */
+@CssImport("./styles/views/main/main-view.css")
+@PWA(name = "DAX-DATA", shortName = "DAX-DATA", enableInstallPrompt = false)
 @JsModule("./styles/shared-styles.js")
-@PWA(name = "DAX-DATA", shortName = "DAX-DATA",  enableInstallPrompt = false)
 @Theme(value = Lumo.class, variant = Lumo.DARK)
-@CssImport("styles/views/main/main-view.css")
 public class MainView extends AppLayout {
 
     private final Tabs menu;
@@ -85,42 +83,27 @@ public class MainView extends AppLayout {
     }
 
     private Component[] createMenuItems() {
-        RouterLink[] links = new RouterLink[] {
-            new RouterLink("DAX", DAXView.class),
-            new RouterLink("Single Stocks", SingleStocksView.class),
-            new RouterLink("About", AboutView.class)
-        };
-        return Arrays.stream(links).map(MainView::createTab).toArray(Tab[]::new);
+        return new Tab[]{createTab("DAX", DAXView.class), createTab("Single Stocks", SingleStocksView.class),
+                createTab("About", AboutView.class)};
     }
 
-    private static Tab createTab(Component content) {
+    private static Tab createTab(String text, Class<? extends Component> navigationTarget) {
         final Tab tab = new Tab();
-        tab.add(content);
+        tab.add(new RouterLink(text, navigationTarget));
+        ComponentUtil.setData(tab, Class.class, navigationTarget);
         return tab;
     }
 
     @Override
     protected void afterNavigation() {
         super.afterNavigation();
-        updateChrome();
-    }
-
-    private void updateChrome() {
-        getTabWithCurrentRoute().ifPresent(menu::setSelectedTab);
+        getTabForComponent(getContent()).ifPresent(menu::setSelectedTab);
         viewTitle.setText(getCurrentPageTitle());
     }
 
-    private Optional<Tab> getTabWithCurrentRoute() {
-        String currentRoute = RouteConfiguration.forSessionScope()
-                .getUrl(getContent().getClass());
-        return menu.getChildren().filter(tab -> hasLink(tab, currentRoute))
+    private Optional<Tab> getTabForComponent(Component component) {
+        return menu.getChildren().filter(tab -> ComponentUtil.getData(tab, Class.class).equals(component.getClass()))
                 .findFirst().map(Tab.class::cast);
-    }
-
-    private boolean hasLink(Component tab, String currentRoute) {
-        return tab.getChildren().filter(RouterLink.class::isInstance)
-                .map(RouterLink.class::cast).map(RouterLink::getHref)
-                .anyMatch(currentRoute::equals);
     }
 
     private String getCurrentPageTitle() {
