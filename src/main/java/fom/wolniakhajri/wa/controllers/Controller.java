@@ -58,7 +58,7 @@ public class Controller {
 
         cb.setItemLabelGenerator(Company::getName);
         cb.setItems(companyList);
-        cb.setValue(companyList.get(12));
+        cb.setValue(companyList.get(13));       //set Value to Deutsche Telekom AG
 
         cb.addValueChangeListener(event -> {
             try {
