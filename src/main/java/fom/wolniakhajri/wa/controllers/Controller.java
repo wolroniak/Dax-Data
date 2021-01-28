@@ -8,7 +8,9 @@ import com.github.appreciated.apexcharts.config.chart.animations.builder.Dynamic
 import com.github.appreciated.apexcharts.config.chart.builder.AnimationsBuilder;
 import com.github.appreciated.apexcharts.config.chart.builder.ZoomBuilder;
 import com.github.appreciated.apexcharts.config.subtitle.Align;
+import com.github.appreciated.apexcharts.config.xaxis.Labels;
 import com.github.appreciated.apexcharts.config.xaxis.XAxisType;
+import com.github.appreciated.apexcharts.config.xaxis.builder.LabelsBuilder;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -115,6 +117,9 @@ public class Controller {
                             .withTooltip(TooltipBuilder.get()
                                     .withEnabled(true)
                                     .build())
+                            .withLabels(LabelsBuilder.get()
+                                    .withShow(false)
+                                    .build())
                             .build())
                     .withYaxis(YAxisBuilder.get()
                             .withTooltip(TooltipBuilder.get()
@@ -142,6 +147,9 @@ public class Controller {
                             .withType(XAxisType.categories)
                             .withTooltip(TooltipBuilder.get()
                                     .withEnabled(true)
+                                    .build())
+                            .withLabels(LabelsBuilder.get()
+                                    .withShow(false)
                                     .build())
                             .build())
                     .withYaxis(YAxisBuilder.get()
