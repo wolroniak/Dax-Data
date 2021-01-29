@@ -2,20 +2,20 @@ package fom.wolniakhajri.wa.models;
 
 import java.util.ArrayList;
 
-public enum ChartTypes {
+public enum ChartTypesModel {
     AREA,
     CANDLESTICK,
     LINE;
 
-    public static ArrayList<ChartTypes> createChartTypeList(){
-        ArrayList<ChartTypes> list = new ArrayList<>();
+    public static ArrayList<ChartTypesModel> createChartTypeList(){
+        ArrayList<ChartTypesModel> list = new ArrayList<>();
         list.add(AREA);
         list.add(CANDLESTICK);
         list.add(LINE);
         return list;
     }
 
-    public static String getStringValue(ChartTypes type) {
+    public static String getStringValue(ChartTypesModel type) {
         String tmp = "";
         switch (type) {
             case AREA:

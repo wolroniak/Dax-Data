@@ -8,13 +8,12 @@ import com.github.appreciated.apexcharts.config.chart.animations.builder.Dynamic
 import com.github.appreciated.apexcharts.config.chart.builder.AnimationsBuilder;
 import com.github.appreciated.apexcharts.config.chart.builder.ZoomBuilder;
 import com.github.appreciated.apexcharts.config.subtitle.Align;
-import com.github.appreciated.apexcharts.config.xaxis.Labels;
 import com.github.appreciated.apexcharts.config.xaxis.XAxisType;
 import com.github.appreciated.apexcharts.config.xaxis.builder.LabelsBuilder;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import fom.wolniakhajri.wa.models.ChartTypes;
+import fom.wolniakhajri.wa.models.ChartTypesModel;
 import fom.wolniakhajri.wa.models.Company;
 import fom.wolniakhajri.wa.models.CompanyList;
 import fom.wolniakhajri.wa.models.DataSeriesModel;
@@ -26,10 +25,10 @@ import java.util.List;
 
 public class Controller {
 
-    public static ComboBox<ChartTypes> getComboBoxChartTypes(String range, String interval, HorizontalLayout view) {
-        ComboBox<ChartTypes> cb = new ComboBox<>();
-        List<ChartTypes> chartTypelist = ChartTypes.createChartTypeList();
-        cb.setItemLabelGenerator(ChartTypes::getStringValue);
+    public static ComboBox<ChartTypesModel> getComboBoxChartTypes(String range, String interval, HorizontalLayout view) {
+        ComboBox<ChartTypesModel> cb = new ComboBox<>();
+        List<ChartTypesModel> chartTypelist = ChartTypesModel.createChartTypeList();
+        cb.setItemLabelGenerator(ChartTypesModel::getStringValue);
         cb.setItems(chartTypelist);
         cb.setValue(chartTypelist.get(0));
         if(view instanceof DAXView) {
@@ -94,7 +93,7 @@ public class Controller {
         return b;
     }
 
-    public static ApexCharts buildChart(String range, String interval, ChartTypes types, String symbol, HorizontalLayout view) throws IOException {
+    public static ApexCharts buildChart(String range, String interval, ChartTypesModel types, String symbol, HorizontalLayout view) throws IOException {
         ApexCharts chart;
         if(view instanceof DAXView) {
             chart = ApexChartsBuilder.get()

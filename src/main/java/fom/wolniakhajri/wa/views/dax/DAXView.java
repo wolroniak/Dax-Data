@@ -9,7 +9,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import fom.wolniakhajri.wa.controllers.Controller;
-import fom.wolniakhajri.wa.models.ChartTypes;
+import fom.wolniakhajri.wa.models.ChartTypesModel;
 import fom.wolniakhajri.wa.views.main.MainView;
 
 import java.io.IOException;
@@ -22,7 +22,7 @@ public class DAXView extends HorizontalLayout {
 
     private ApexCharts daxChart;
 
-    private final ComboBox<ChartTypes> chartTypesComboBox;
+    private final ComboBox<ChartTypesModel> chartTypesComboBox;
 
     private boolean chartInitialized = false;
 
@@ -55,7 +55,7 @@ public class DAXView extends HorizontalLayout {
 
     }
 
-    public void buildChartView(String range, String interval, ChartTypes types, String symbol) throws IOException {
+    public void buildChartView(String range, String interval, ChartTypesModel types, String symbol) throws IOException {
         if (chartInitialized) {
             remove(daxChart);
         } else {
@@ -98,7 +98,7 @@ public class DAXView extends HorizontalLayout {
         return null;
     }
 
-    public ComboBox<ChartTypes> getChartTypesComboBox() {
+    public ComboBox<ChartTypesModel> getChartTypesComboBox() {
         return chartTypesComboBox;
     }
 
