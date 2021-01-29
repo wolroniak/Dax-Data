@@ -163,7 +163,7 @@ public class DataSeriesModel {
             jdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         }
 
-        jdf.setTimeZone(TimeZone.getTimeZone("GMT+2"));
+        jdf.setTimeZone(TimeZone.getTimeZone("GMT+1"));
 
         return jdf.format(date);
     }
