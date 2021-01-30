@@ -25,7 +25,7 @@ import java.util.List;
 
 public class Controller {
 
-    public static ComboBox<ChartTypesModel> getComboBoxChartTypes(String range, String interval, HorizontalLayout view) {
+    public static ComboBox<ChartTypesModel> getComboBoxChartTypes(String range, HorizontalLayout view) {
         ComboBox<ChartTypesModel> cb = new ComboBox<>();
         List<ChartTypesModel> chartTypelist = ChartTypesModel.createChartTypeList();
         cb.setItemLabelGenerator(ChartTypesModel::getStringValue);
@@ -34,7 +34,7 @@ public class Controller {
         if(view instanceof DAXView) {
             cb.addValueChangeListener(event -> {
                 try {
-                    ((DAXView) view).buildChartView(range, interval, ((DAXView) view).getChartTypesComboBox().getValue(), "%5EGDAXI");
+                    ((DAXView) view).buildChartView(range, ((DAXView) view).getChartTypesComboBox().getValue(), "%5EGDAXI");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -42,7 +42,7 @@ public class Controller {
         } else {
             cb.addValueChangeListener(event -> {
                 try {
-                    ((SingleStocksView) view).buildChartView(range, interval, ((SingleStocksView) view).getChartTypesComboBox().getValue(), ((SingleStocksView) view).getComboBoxCompanies().getValue().getSymbol());
+                    ((SingleStocksView) view).buildChartView(range, ((SingleStocksView) view).getChartTypesComboBox().getValue(), ((SingleStocksView) view).getComboBoxCompanies().getValue().getSymbol());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -51,7 +51,7 @@ public class Controller {
         return cb;
     }
 
-    public static ComboBox<Company> getComboBoxCompany(String range, String interval, HorizontalLayout view) {
+    public static ComboBox<Company> getComboBoxCompany(String range, HorizontalLayout view) {
         ComboBox<Company> cb = new ComboBox<>();
         List<Company> companyList = CompanyList.createCompanyList();
 
@@ -61,7 +61,7 @@ public class Controller {
 
         cb.addValueChangeListener(event -> {
             try {
-                ((SingleStocksView) view).buildChartView(range, interval, ((SingleStocksView)view).getChartTypesComboBox().getValue(), cb.getValue().getSymbol());
+                ((SingleStocksView) view).buildChartView(range, ((SingleStocksView)view).getChartTypesComboBox().getValue(), cb.getValue().getSymbol());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -69,12 +69,12 @@ public class Controller {
         return cb;
     }
 
-    public static Button createButton(String range, String interval, HorizontalLayout view) {
+    public static Button createButton(String range, HorizontalLayout view) {
         Button b = new Button(range);
         if(view instanceof DAXView) {
             b.addClickListener(buttonClickEvent -> {
                 try {
-                    ((DAXView) view).buildChartView(range, interval, ((DAXView) view).getChartTypesComboBox().getValue(), "%5EGDAXI");
+                    ((DAXView) view).buildChartView(range, ((DAXView) view).getChartTypesComboBox().getValue(), "%5EGDAXI");
                     ((DAXView) view).disableButton(b);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -83,7 +83,7 @@ public class Controller {
         } else {
             b.addClickListener(buttonClickEvent -> {
                 try {
-                    ((SingleStocksView) view).buildChartView(range, interval, ((SingleStocksView) view).getChartTypesComboBox().getValue(), ((SingleStocksView) view).getComboBoxCompanies().getValue().getSymbol());
+                    ((SingleStocksView) view).buildChartView(range, ((SingleStocksView) view).getChartTypesComboBox().getValue(), ((SingleStocksView) view).getComboBoxCompanies().getValue().getSymbol());
                     ((SingleStocksView) view).disableButton(b);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -93,7 +93,7 @@ public class Controller {
         return b;
     }
 
-    public static ApexCharts buildChart(String range, String interval, ChartTypesModel types, String symbol, HorizontalLayout view) throws IOException {
+    public static ApexCharts buildChart(String range, ChartTypesModel types, String symbol, HorizontalLayout view) throws IOException {
         ApexCharts chart;
         if(view instanceof DAXView) {
             chart = ApexChartsBuilder.get()
@@ -110,7 +110,7 @@ public class Controller {
                             .withText("DAX (^GDAXI)")
                             .withAlign(Align.left)
                             .build())
-                    .withSeries(DataSeriesModel.getStockDataset(symbol, range, interval))
+                    .withSeries(DataSeriesModel.getStockDataset(symbol, range, getInterval(range)))
                     .withXaxis(XAxisBuilder.get()
                             .withType(XAxisType.categories)
                             .withTooltip(TooltipBuilder.get()
@@ -141,7 +141,7 @@ public class Controller {
                             .withText(((SingleStocksView) view).getComboBoxCompanies().getValue().getName() + " (" + symbol + ")")
                             .withAlign(Align.left)
                             .build())
-                    .withSeries(DataSeriesModel.getStockDataset(symbol, range, interval))
+                    .withSeries(DataSeriesModel.getStockDataset(symbol, range, getInterval(range)))
                     .withXaxis(XAxisBuilder.get()
                             .withType(XAxisType.categories)
                             .withTooltip(TooltipBuilder.get()
@@ -177,6 +177,31 @@ public class Controller {
                 break;
         }
         return tmp;
+    }
+
+    private static String getInterval(String text) {
+        switch (text) {
+            case "max":
+                return "3mo";
+            case "10y":
+                return "1mo";
+            case "5y":
+                return "1wk";
+            case "2y":
+                return "5d";
+            case "1y":
+            case "6mo":
+                return "1d";
+            case "3mo":
+                return "1h";
+            case "1mo":
+                return "15m";
+            case "7d":
+                return "5m";
+            case "1d":
+                return "1m";
+        }
+        return null;
     }
 
 }
