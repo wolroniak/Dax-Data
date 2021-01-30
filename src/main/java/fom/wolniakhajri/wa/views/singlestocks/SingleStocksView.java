@@ -1,248 +1,74 @@
 package fom.wolniakhajri.wa.views.singlestocks;
 
 import com.github.appreciated.apexcharts.ApexCharts;
-import com.github.appreciated.apexcharts.ApexChartsBuilder;
-import com.github.appreciated.apexcharts.config.Chart;
-import com.github.appreciated.apexcharts.config.builder.*;
-import com.github.appreciated.apexcharts.config.chart.Type;
-import com.github.appreciated.apexcharts.config.chart.animations.builder.DynamicAnimationBuilder;
-import com.github.appreciated.apexcharts.config.chart.builder.AnimationsBuilder;
-import com.github.appreciated.apexcharts.config.chart.builder.ZoomBuilder;
-import com.github.appreciated.apexcharts.config.subtitle.Align;
-import com.github.appreciated.apexcharts.config.xaxis.XAxisType;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.charts.model.ChartType;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.page.Page;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import fom.wolniakhajri.wa.controllers.DataSeriesController;
-import fom.wolniakhajri.wa.models.ChartTypes;
-import fom.wolniakhajri.wa.models.CompanyList;
+import fom.wolniakhajri.wa.controllers.Controller;
+import fom.wolniakhajri.wa.models.ChartTypesModel;
 import fom.wolniakhajri.wa.models.Company;
 import fom.wolniakhajri.wa.views.main.MainView;
 
 import java.io.IOException;
-import java.util.List;
 
-@Route(value = "stocks", layout = MainView.class)
+@Route(value = "singlestocks", layout = MainView.class)
 @PageTitle("Single Stocks")
-@CssImport("styles/views/singlestocks/single-stocks-view.css")
-public class SingleStocksView extends Div {
+@CssImport("./styles/views/singlestocks/singlestocks.css")
+public class SingleStocksView extends HorizontalLayout {
 
-    private ApexCharts barChart;
+    private ApexCharts daxChart;
+
+    private final ComboBox<ChartTypesModel> chartTypesComboBox;
+
     private final ComboBox<Company> comboBoxCompanies;
-    private final ComboBox<ChartTypes> chartTypesComboBox;
-    private Button clickedButton;
-    private final Button buttonMax;
-    private final Button button10years;
-    private final Button button5years;
-    private final Button button2years;
-    private final Button button1year;
-    private final Button button6months;
-    private final Button button3months;
-    private final Button button1month;
-    private final Button button1week;
-    private final Button button1day;
+
     private boolean chartInitialized = false;
 
+    private Button clickedButton;
 
-    public SingleStocksView() {
-        setId("single-stocks-view");
-
-        //Initialize ComboBox
-        this.chartTypesComboBox = new ComboBox<>();
-        this.comboBoxCompanies = new ComboBox<>();
-
-        List<Company> companyList = CompanyList.createCompanyList();
-        List<ChartTypes> chartTypelist = ChartTypes.createChartTypeList();
-
-        chartTypesComboBox.setItemLabelGenerator(ChartTypes::getStringValue);
-        chartTypesComboBox.setItems(chartTypelist);
-        chartTypesComboBox.setValue(chartTypelist.get(0));
-        comboBoxCompanies.setItemLabelGenerator(Company::getName);
-        comboBoxCompanies.setItems(companyList);
-        comboBoxCompanies.setValue(companyList.get(12));
-
-        comboBoxCompanies.addValueChangeListener(event -> {
-            try {
-                this.buildChart(comboBoxCompanies.getValue(), clickedButton.getText(), getInterval(clickedButton.getText()),chartTypesComboBox.getValue());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        chartTypesComboBox.addValueChangeListener(event->{
-            try {
-                this.buildChart(comboBoxCompanies.getValue(), clickedButton.getText(),getInterval(clickedButton.getText()), chartTypesComboBox.getValue());
-            } catch(IOException e){
-                e.printStackTrace();
-            }
-        });
-
-        //Initialize Button: MAX
-        buttonMax = new Button("max");
-        buttonMax.addClickListener(clickEvent -> {
-            try {
-                this.buildChart(comboBoxCompanies.getValue(), "max", "3mo", chartTypesComboBox.getValue());
-                disableButton(buttonMax);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        //Initialize Button: 10 Years
-        button10years = new Button("10y");
-        button10years.addClickListener(clickEvent -> {
-            try {
-                this.buildChart(comboBoxCompanies.getValue(), "10y", "1mo", chartTypesComboBox.getValue());
-                disableButton(button10years);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        //Initialize Button: 5 Years
-        button5years = new Button("5y");
-        button5years.addClickListener(clickEvent -> {
-            try {
-                this.buildChart(comboBoxCompanies.getValue(), "5y", "1wk", chartTypesComboBox.getValue());
-                disableButton(button5years);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        //Initialize Button: 2 Years
-        button2years = new Button("2y");
-        button2years.addClickListener(clickEvent -> {
-            try {
-                this.buildChart(comboBoxCompanies.getValue(), "2y", "5d", chartTypesComboBox.getValue());
-                disableButton(button2years);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        //Initialize Button: 1 Year
-        button1year = new Button("1y");
-        button1year.addClickListener(clickEvent -> {
-            try {
-                this.buildChart(comboBoxCompanies.getValue(), "1y", "1d", chartTypesComboBox.getValue());
-                disableButton(button1year);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        //Initialize Button: 6 Months
-        button6months = new Button("6mo");
-        button6months.addClickListener(clickEvent -> {
-            try {
-                this.buildChart(comboBoxCompanies.getValue(), "6mo", "1d", chartTypesComboBox.getValue());
-                disableButton(button6months);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        //Initialize Button: 3 Months
-        button3months = new Button("3mo");
-        button3months.addClickListener(clickEvent -> {
-            try {
-                this.buildChart(comboBoxCompanies.getValue(), "3mo", "1h", chartTypesComboBox.getValue());
-                disableButton(button3months);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        //Initialize Button: 1 Months
-        button1month = new Button("1mo");
-        button1month.addClickListener(clickEvent -> {
-            try {
-                this.buildChart(comboBoxCompanies.getValue(), "1mo", "15m", chartTypesComboBox.getValue());
-                disableButton(button1month);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        //Initialize Button: 1 Week (7d)
-        button1week = new Button("7d");
-        button1week.addClickListener(clickEvent -> {
-            try {
-                this.buildChart(comboBoxCompanies.getValue(), "7d", "5m", chartTypesComboBox.getValue());
-                disableButton(button1week);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        //Initialize Button: 1 Day (Intraday)
-        button1day = new Button("1d");
-        button1day.addClickListener(clickEvent -> {
-            try {
-                this.buildChart(comboBoxCompanies.getValue(), "1d", "1m", chartTypesComboBox.getValue());
-                disableButton(button1day);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        //ComboBox
-        add(comboBoxCompanies);
+    public SingleStocksView() throws IOException {
+        setId("singlestocks");
 
         //Buttons
-        add(buttonMax);
-        add(button10years);
-        add(button5years);
-        add(button2years);
-        add(button1year);
-        add(button6months);
-        add(button3months);
-        add(button1month);
-        add(button1week);
-        add(button1day);
+        Button buttonMax = Controller.createButton("max",this);
+        Button button10years = Controller.createButton("10y",this);
+        Button button5years = Controller.createButton("5y",this);
+        Button button2years = Controller.createButton("2y",this);
+        Button button1year = Controller.createButton("1y",this);
+        Button button6months = Controller.createButton("6mo",this);
+        Button button3months = Controller.createButton("3mo",this);
+        Button button1month = Controller.createButton("1mo",this);
+        Button button1week = Controller.createButton("7d",this);
+        Button button1day = Controller.createButton("1d",this);
+
+        disableButton(button1week);
+
+        chartTypesComboBox = Controller.getComboBoxChartTypes(clickedButton.getText(), this);
+
+        comboBoxCompanies = Controller.getComboBoxCompany("7d", this);
+
+        add(comboBoxCompanies);
+        add(buttonMax, button10years, button5years, button2years, button1year, button6months, button3months, button1month, button1week, button1day);
         add(chartTypesComboBox);
 
-        try {
-            buildChart(companyList.get(12), "7d", "5m",chartTypelist.get(0));
-            disableButton(button1week);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        buildChartView("7d", chartTypesComboBox.getValue(), comboBoxCompanies.getValue().getSymbol());
+
     }
 
-    private String getInterval(String text) {
-        switch (text) {
-            case "max":
-                return "3mo";
-            case "10y":
-                return "1mo";
-            case "5y":
-                return "1wk";
-            case "2y":
-                return "5d";
-            case "1y":
-            case "6mo":
-                return "1d";
-            case "3mo":
-                return "1h";
-            case "1mo":
-                return "15m";
-            case "7d":
-                return "5m";
-            case "1d":
-                return "1m";
+    public void buildChartView(String range, ChartTypesModel types, String symbol) throws IOException {
+        if (chartInitialized) {
+            remove(daxChart);
+        } else {
+            chartInitialized = true;
         }
-        return null;
+        daxChart = Controller.buildChart(range, types, symbol, this);
+        add(daxChart);
     }
 
-    private void disableButton(Button toDisable) {
+    public void disableButton(Button toDisable) {
         if (clickedButton != null && clickedButton != toDisable) {
             clickedButton.setEnabled(true);
         }
@@ -250,63 +76,12 @@ public class SingleStocksView extends Div {
         clickedButton = toDisable;
     }
 
-    private void buildChart(Company company, String range, String interval, ChartTypes type) throws IOException {
-        if (chartInitialized) {
-            remove(barChart);
-        } else {
-            chartInitialized = true;
-        }
-
-
-        System.out.println(type.name());
-        barChart = ApexChartsBuilder.get()
-                .withChart(ChartBuilder.get()
-                        .withType(getChartType(type.name()))
-                        .withZoom(ZoomBuilder.get().withEnabled(true).build())
-                        .withHeight("490")
-                        .withAnimations(AnimationsBuilder.get().withEnabled(true).withDynamicAnimation(DynamicAnimationBuilder.get().withEnabled(true).withSpeed(350).build()).build())
-                        .build())
-                .withDataLabels(DataLabelsBuilder.get()
-                        .withEnabled(false)
-                        .build())
-                .withTitle(TitleSubtitleBuilder.get()
-                        .withText(company.getName() + " (" + company.getSymbol() + ")")
-                        .withAlign(Align.left)
-                        .build())
-                .withSeries(DataSeriesController.getStockDataset(company.getSymbol(), range, interval))
-                .withXaxis(XAxisBuilder.get()
-                        .withType(XAxisType.categories)
-                        .withTooltip(TooltipBuilder.get()
-                                .withEnabled(true)
-                                .build())
-                        .build())
-                .withYaxis(YAxisBuilder.get()
-                        .withTooltip(TooltipBuilder.get()
-                                .withEnabled(true)
-                                .build())
-                        .build())
-                .build();
-
-        add(barChart);
-        setWidth("100%");
-        setHeight("100%");
-
+    public ComboBox<ChartTypesModel> getChartTypesComboBox() {
+        return chartTypesComboBox;
     }
-    private Type getChartType(String type){
-        Type tmp = Type.area;
-            switch (type){
-                case "AREA":
-                    tmp = Type.area;
-                    break;
-                case "CANDLESTICK":
-                    tmp = Type.candlestick;
-                    break;
-                case "LINE":
-                    tmp = Type.line;
-                    break;
-                default:
-                    break;
-            }
-            return tmp;
+
+    public ComboBox<Company> getComboBoxCompanies() {
+        return comboBoxCompanies;
     }
+
 }

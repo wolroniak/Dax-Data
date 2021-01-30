@@ -1,4 +1,4 @@
-package fom.wolniakhajri.wa.controllers;
+package fom.wolniakhajri.wa.models;
 
 import com.github.appreciated.apexcharts.helper.Coordinate;
 import com.github.appreciated.apexcharts.helper.Series;
@@ -16,11 +16,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
-// "https://query1.finance.yahoo.com/v7/finance/chart/DTE.DE?range=1d&interval=1m&indicators=quote&includeTimestamps=true"
-
-@SuppressWarnings("rawtypes")
-public class DataSeriesController {
-
+public class DataSeriesModel {
 
     private static String readAll(Reader rd) throws IOException {
         StringBuilder sb = new StringBuilder();
@@ -56,6 +52,7 @@ public class DataSeriesController {
         }
 
         dataset.setData(data);
+        dataset.setName("EUR");
         return dataset;
 
     }
@@ -166,7 +163,7 @@ public class DataSeriesController {
             jdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         }
 
-        jdf.setTimeZone(TimeZone.getTimeZone("GMT+2"));
+        jdf.setTimeZone(TimeZone.getTimeZone("GMT+1"));
 
         return jdf.format(date);
     }
